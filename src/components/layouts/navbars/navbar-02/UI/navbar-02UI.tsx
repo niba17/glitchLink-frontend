@@ -27,7 +27,9 @@ export const Navbar02UI = ({
 }: Navbar02UIProps) => {
   return (
     <nav className="sticky top-0 w-full py-3 flex justify-between items-center bg-zinc-800 px-5 z-50">
-      <div className="text-3xl font-bold text-white">glitchLink</div>
+      <div className="lg:text-3xl md:text-3xl text-2xl font-bold text-white">
+        glitchLink
+      </div>
 
       {/* Desktop Menu */}
       {isLoggedIn && <Navbar02MenuUI className="hidden md:block" />}
@@ -36,9 +38,7 @@ export const Navbar02UI = ({
         {!isLoggedIn ? (
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" className="hidden sm:inline-flex">
-                Sign In
-              </Button>
+              <Button variant="outline">Sign In</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>

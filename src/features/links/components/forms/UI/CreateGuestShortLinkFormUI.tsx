@@ -134,7 +134,7 @@ export default function CreateGuestShortLinkFormUI({
       <Button
         type="submit"
         variant="default"
-        className="lg:text-[20px] md:text-[18px] lg:h-14 md:h-12 flex items-center justify-center"
+        className="lg:text-[20px] md:text-[18px] text-lg lg:h-14 md:h-12 h-14 flex items-center justify-center"
         disabled={isPending}
       >
         {isPending ? <Spinner className="w-7 h-7" /> : "Get Shortlink"}

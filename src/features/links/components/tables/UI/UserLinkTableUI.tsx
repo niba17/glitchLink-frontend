@@ -143,17 +143,17 @@ export function UserLinkTableUI({
 
       <div className="space-y-4">
         {/* Table */}
-        <Table>
+        <Table className="lg:table-auto md:table-auto table-fixed w-full">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[80px]"></TableHead>
-              <TableHead className="text-stone-200 lg:text-xl md:text-[18px] font-semibold">
+              <TableHead className="lg:w-[80px] md:w-[80px] w-[40px]"></TableHead>
+              <TableHead className="text-stone-200 lg:text-xl md:text-[18px] font-semibold lg:w-auto md:w-auto w-[180px]">
                 Links
               </TableHead>
-              <TableHead className="text-end text-stone-200 lg:text-xl md:text-[18px] font-semibold">
+              <TableHead className="text-end text-stone-200 lg:text-xl md:text-[18px] font-semibold lg:w-auto md:w-auto w-[250px]">
                 Clicks
               </TableHead>
-              <TableHead className="text-end text-stone-200 lg:text-xl md:text-[18px] font-semibold">
+              <TableHead className="text-end text-stone-200 lg:text-xl md:text-[18px] font-semibold lg:w-auto md:w-auto w-[200px]">
                 Created / Expired At
               </TableHead>
             </TableRow>
@@ -181,7 +181,9 @@ export function UserLinkTableUI({
                   >
                     {/* Index */}
                     <TableCell>
-                      <span className="text-xl font-semibold">{idx + 1}</span>
+                      <span className="lg:text-xl md:text-xl text-md font-semibold">
+                        {idx + 1}
+                      </span>
                     </TableCell>
 
                     {/* Link + Badge + Actions */}
@@ -189,7 +191,7 @@ export function UserLinkTableUI({
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
                           <button
-                            className="font-semibold underline text-left text-blue-400 hover:text-blue-300 break-words"
+                            className="lg:text-[14px] md:text-[14px] text-[13px] font-semibold underline text-left text-blue-400 hover:text-blue-300 break-words"
                             onClick={() =>
                               onVisit(link.customAlias || link.shortCode!)
                             }
@@ -206,12 +208,12 @@ export function UserLinkTableUI({
 
                         <span
                           title="Original link"
-                          className="text-[14px] text-stone-400 break-words"
+                          className="lg:text-[14px] md:text-[14px] text-[12px] text-stone-400 break-words"
                         >
                           {link.originalUrl}
                         </span>
 
-                        <div className="flex items-center justify-start gap-2 mt-2">
+                        <div className="flex items-center justify-start lg:gap-2 md:gap-2 gap-0 mt-2">
                           <Button
                             title="Copy short link"
                             variant="icon"
@@ -250,19 +252,19 @@ export function UserLinkTableUI({
                       </div>
                     </TableCell>
 
-                    <TableCell className="text-end">
+                    <TableCell className="text-end lg:text-[14px] md:text-[14px] text-[13px]">
                       {link.clicksCount ?? 0}{" "}
                       {link.clicksCount === 1 ? "Click" : "Clicks"}
                     </TableCell>
 
-                    <TableCell className="text-end">
-                      <div className="flex flex-col text-end">
-                        <span title="Short link created">
+                    <TableCell className="text-end lg:text-[14px] md:text-[14px] text-[13px] whitespace-nowrap">
+                      <div className="flex flex-col justify-items-end">
+                        <span className="truncate" title="Short link created">
                           {formatForDisplay(link.createdAt ?? null)}
                         </span>
                         <span
+                          className="truncate text-red-500"
                           title="Short link expired"
-                          className="text-red-500"
                         >
                           {formatForDisplay(link.expiresAt ?? null)}
                         </span>

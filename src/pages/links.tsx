@@ -40,7 +40,7 @@ export default function LinksPage() {
   return (
     <section>
       <div className="bg-zinc-950 min-h-screen p-5 space-y-[10px]">
-        <div className="grid grid-cols-5">
+        <div className="grid lg:grid-cols-5 md:grid-cols-5 grid-cols-1">
           <Button onClick={() => dialogs.setOpenCreateDialog(true)}>
             Create Short Link
           </Button>

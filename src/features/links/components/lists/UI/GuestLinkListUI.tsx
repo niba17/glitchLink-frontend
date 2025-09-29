@@ -26,7 +26,7 @@ export function GuestLinkListUI({
 }: GuestLinkListUIProps) {
   return (
     <>
-      <ul className="grid grid-cols-2 gap-[20px]">
+      <ul className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-[20px]">
         {links.map((link) => (
           <li key={link.id} className="bg-zinc-800 p-[20px] rounded-sm w-full">
             <div className="flex flex-col space-y-[0.5px]">
