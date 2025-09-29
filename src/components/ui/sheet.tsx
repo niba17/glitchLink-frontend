@@ -1,5 +1,7 @@
+// frontend/src/components/ui/sheet.tsx
+
 import * as React from "react";
-import { Dialog as SheetPrimitive } from "radix-ui";
+import * as SheetPrimitive from "@radix-ui/react-dialog"; // ✅ perbaikan di sini
 import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";

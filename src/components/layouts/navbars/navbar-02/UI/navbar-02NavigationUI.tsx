@@ -12,7 +12,7 @@ export const Navbar02NavigationUI = () => {
         </Button>
       </SheetTrigger>
       <SheetContent className="bg-foreground px-6 py-3 max-w-[100vw] w-[80vw]">
-        <Navbar02MenuUI orientation="vertical" />
+        <Navbar02MenuUI orientation="vertical" withSheetClose />
       </SheetContent>
     </Sheet>
   );
