@@ -124,7 +124,7 @@ export function LineCardUI({
   return (
     <Card className="bg-foreground p-5">
       <CardHeader className="p-0 pb-6">
-        <div className="flex flex-wrap gap-y-2 space-x-2">
+        <div className="flex flex-wrap gap-2">
           <DateRangePicker
             key={JSON.stringify(dateRange)}
             initialRange={dateRange}

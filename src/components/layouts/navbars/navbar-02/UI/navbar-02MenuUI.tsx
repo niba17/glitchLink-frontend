@@ -34,10 +34,10 @@ export const Navbar02MenuUI = (
             <NavigationMenuLink asChild>
               <Link
                 href={link.href}
-                className={`px-3 py-1 rounded-md transition-colors ${
-                  currentPathname.startsWith(link.href)
-                    ? "bg-foreground text-background"
-                    : "text-foreground"
+                className={`px-3 py-2 rounded-md transition-colors ${
+                  currentPathname === link.href
+                    ? "bg-gray-200 text-black"
+                    : "text-accent hover:text-black hover:bg-gray-100"
                 }`}
               >
                 {link.name}

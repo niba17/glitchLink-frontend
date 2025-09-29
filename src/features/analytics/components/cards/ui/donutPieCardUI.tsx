@@ -77,7 +77,7 @@ export function DonutPieCardUI({
   return (
     <Card className="bg-foreground p-5">
       <CardHeader className="p-0 pb-3">
-        <div className="flex flex-wrap gap-y-2 space-x-2">
+        <div className="flex flex-wrap gap-2">
           {/* Add key here to force component to re-render */}
           <DateRangePicker
             key={JSON.stringify(dateRange)}

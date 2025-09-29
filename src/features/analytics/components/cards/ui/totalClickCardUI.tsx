@@ -45,7 +45,7 @@ export function TotalClickCardUI({
 
   return (
     <Card className="bg-foreground p-5">
-      <CardHeader className="p-0 mb-5 text-lg font-semibold text-accent">
+      <CardHeader className="p-0 lg:mb-5 md:mb-5 mb-2 lg:text-lg md:text-lg text-md font-semibold text-accent">
         Total clicks : {clicks.toLocaleString()}
       </CardHeader>
       <CardContent className="p-0">{content}</CardContent>

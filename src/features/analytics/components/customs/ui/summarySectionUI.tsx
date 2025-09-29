@@ -12,11 +12,9 @@ export function SummarySectionUI({ selectedShortlink }: SummarySectionUIProps) {
   const shortlinkId = selectedShortlink?.id || 0;
 
   return (
-    <div className="flex flex-col space-y-5">
-      <div className="grid grid-cols-2 justify-center space-x-5">
-        <TotalClickCardContainer shortlinkId={shortlinkId} />
-        <TrafficSourceCardContainer shortlinkId={shortlinkId} />
-      </div>
+    <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 justify-center gap-5">
+      <TotalClickCardContainer shortlinkId={shortlinkId} />
+      <TrafficSourceCardContainer shortlinkId={shortlinkId} />
     </div>
   );
 }

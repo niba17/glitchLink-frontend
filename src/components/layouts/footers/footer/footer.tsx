@@ -39,7 +39,7 @@ const Footer = () => {
     <div className="flex flex-col bg-zinc-800">
       <div className="grow bg-muted" />
       <footer className="">
-        <div className="max-w-(--breakpoint-xl) mx-auto">
+        <div className="mx-auto">
           {/* <div className="py-12 flex flex-col justify-start items-center">
            
             <svg

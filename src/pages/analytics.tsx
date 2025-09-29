@@ -44,8 +44,8 @@ export default function AnalyticsPage() {
   return (
     <div className="bg-zinc-950 min-h-screen p-5 space-y-5">
       <section>
-        <div className="flex items-center space-x-2">
-          <h1 className="text-xl font-bold text-stone-200">
+        <div className="flex items-center lg:space-x-2 md:space-x-2 space-x-1">
+          <h1 className="lg:text-xl md:text-xl text-sm font-bold text-stone-200">
             Shortlink analytics for
           </h1>
           <DropdownMenu>
@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
               <Button
                 variant="outline"
                 className={cn(
-                  "text-md font-semibold",
+                  "lg:text-md md:text-md text-sm font-semibold break-all",
                   isLoading && "animate-pulse"
                 )}
                 disabled={isLoading}
@@ -71,7 +71,9 @@ export default function AnalyticsPage() {
                   className="justify-start cursor-pointer"
                 >
                   <span className="flex flex-col items-start space-y-1">
-                    <span className="text-md font-semibold">{d.shortUrl}</span>
+                    <span className="lg:text-md md:text-md text-sm font-semibold">
+                      {d.shortUrl}
+                    </span>
                     <span className="text-xs text-stone-500 truncate w-full">
                       {d.originalUrl}
                     </span>
