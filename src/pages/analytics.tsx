@@ -54,7 +54,7 @@ export default function AnalyticsPage() {
               <Button
                 variant="outline"
                 className={cn(
-                  "lg:text-md md:text-md text-sm font-semibold break-all",
+                  "lg:text-lg md:text-lg text-sm font-semibold break-all",
                   isLoading && "animate-pulse"
                 )}
                 disabled={isLoading}
