@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useUserLinks } from "@/features/links/hooks/useUserLinks";
 import { UserLink } from "@/features/links/types/type";
 import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 export default function AnalyticsPage() {
   const router = useRouter();
@@ -58,9 +59,11 @@ export default function AnalyticsPage() {
                 )}
                 disabled={isLoading}
               >
-                {isLoading
-                  ? "Loading..."
-                  : selectedShortlink?.shortUrl || "Pilih Link"}
+                {isLoading ? (
+                  <Spinner></Spinner>
+                ) : (
+                  selectedShortlink?.shortUrl || "Pilih Shortlink"
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-[350px]">
