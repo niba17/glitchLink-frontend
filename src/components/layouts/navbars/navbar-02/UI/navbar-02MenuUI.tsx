@@ -29,7 +29,7 @@ export const Navbar02MenuUI = ({
   const links = [
     { name: "Links", href: "/links" },
     { name: "Analytics", href: "/analytics" },
-    { name: "Account", href: "/account" },
+    // { name: "Account", href: "/account" },
   ];
 
   return (

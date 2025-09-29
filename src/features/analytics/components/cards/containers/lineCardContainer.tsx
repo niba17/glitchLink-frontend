@@ -23,6 +23,11 @@ import {
 } from "@/features/analytics/constants/analyticsKeys";
 import { useUserLinkAnalytics } from "@/features/analytics/hooks/useUserLinkAnalitics";
 import { UserLink } from "@/features/links/types/type";
+import {
+  normalizeBrowser,
+  normalizeDevice,
+  normalizeOS,
+} from "@/features/analytics/utils/donutPieChartNormalizer";
 
 interface LineCardContainerProps {
   selectedShortlink: UserLink | undefined;
@@ -34,38 +39,28 @@ export function LineCardContainer({
   const { analyticsData, isLoading, isError } = useUserLinkAnalytics(
     selectedShortlink?.id
   );
-
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     undefined
   );
-
-  // State untuk melacak keys yang aktif
   const [active, setActive] = React.useState<ActiveState>({
     devices: [],
     browsers: [],
     osList: [],
   });
-
-  // useRef untuk mencegah re-initialization yang tidak perlu
   const hasInitializedRef = React.useRef(false);
 
-  // Effect untuk memperbarui range tanggal saat data analitik berubah
   React.useEffect(() => {
     if (analyticsData && analyticsData.clicks.length > 0) {
       const dates = analyticsData.clicks
         .map((click) => parseISO(click.timestamp))
         .sort((a, b) => a.getTime() - b.getTime());
 
-      setDateRange({
-        from: dates[0],
-        to: dates[dates.length - 1],
-      });
+      setDateRange({ from: dates[0], to: dates[dates.length - 1] });
     } else {
       setDateRange(undefined);
     }
   }, [analyticsData]);
 
-  // Effect untuk mereset flag inisialisasi saat link berubah
   React.useEffect(() => {
     hasInitializedRef.current = false;
   }, [selectedShortlink?.id]);
@@ -73,9 +68,7 @@ export function LineCardContainer({
   const allKeys = [...devices, ...browsers, ...osList] as ChartKey[];
 
   const chartData = React.useMemo(() => {
-    if (!analyticsData?.clicks) {
-      return [];
-    }
+    if (!analyticsData?.clicks) return [];
 
     const activeDateRange =
       dateRange ||
@@ -83,20 +76,8 @@ export function LineCardContainer({
         const dates = analyticsData.clicks
           .map((click) => parseISO(click.timestamp))
           .sort((a, b) => a.getTime() - b.getTime());
-
-        return {
-          from: dates[0],
-          to: dates[dates.length - 1],
-        };
+        return { from: dates[0], to: dates[dates.length - 1] };
       })();
-
-    const formatKey = (str: string) => {
-      if (!str) return "";
-      if (str.toLowerCase() === "macos") {
-        return "macOS";
-      }
-      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-    };
 
     const filteredClicks = analyticsData.clicks.filter((click) =>
       isWithinInterval(parseISO(click.timestamp), {
@@ -114,9 +95,7 @@ export function LineCardContainer({
     allDates.forEach((date) => {
       const dateStr = format(date, "yyyy-MM-dd");
       const item: ChartDataItem = { date: dateStr };
-      allKeys.forEach((key) => {
-        item[key] = 0;
-      });
+      allKeys.forEach((key) => (item[key] = 0));
       clicksMap.set(dateStr, item);
     });
 
@@ -125,44 +104,37 @@ export function LineCardContainer({
       if (clicksMap.has(dateStr)) {
         const item = clicksMap.get(dateStr)!;
 
-        const deviceKey = formatKey(click.device) as ChartKey;
-        const browserKey = formatKey(click.browser) as ChartKey;
-        const osKey = formatKey(click.os) as ChartKey;
+        const deviceKey = normalizeDevice(click.device) as ChartKey;
+        const browserKey = normalizeBrowser(click.browser) as ChartKey;
+        const osKey = normalizeOS(click.os) as ChartKey;
 
-        if (allKeys.includes(deviceKey)) {
+        if (allKeys.includes(deviceKey))
           item[deviceKey] = ((item[deviceKey] as number) || 0) + 1;
-        }
-        if (allKeys.includes(browserKey)) {
+        if (allKeys.includes(browserKey))
           item[browserKey] = ((item[browserKey] as number) || 0) + 1;
-        }
-        if (allKeys.includes(osKey)) {
+        if (allKeys.includes(osKey))
           item[osKey] = ((item[osKey] as number) || 0) + 1;
-        }
       }
     });
 
     return Array.from(clicksMap.values());
   }, [dateRange, analyticsData, allKeys]);
 
-  const initialActiveState = React.useMemo(() => {
-    const devicesWithData = devices.filter((key) =>
-      chartData.some((item) => (item[key] as number) > 0)
-    );
-    const browsersWithData = browsers.filter((key) =>
-      chartData.some((item) => (item[key] as number) > 0)
-    );
-    const osListWithData = osList.filter((key) =>
-      chartData.some((item) => (item[key] as number) > 0)
-    );
+  const initialActiveState = React.useMemo(
+    () => ({
+      devices: devices.filter((key) =>
+        chartData.some((item) => (item[key] as number) > 0)
+      ),
+      browsers: browsers.filter((key) =>
+        chartData.some((item) => (item[key] as number) > 0)
+      ),
+      osList: osList.filter((key) =>
+        chartData.some((item) => (item[key] as number) > 0)
+      ),
+    }),
+    [chartData]
+  );
 
-    return {
-      devices: devicesWithData,
-      browsers: browsersWithData,
-      osList: osListWithData,
-    };
-  }, [chartData]);
-
-  // Effect untuk memperbarui state 'active' hanya saat data pertama kali tiba
   React.useEffect(() => {
     if (!hasInitializedRef.current && initialActiveState.devices.length > 0) {
       setActive(initialActiveState);
@@ -177,11 +149,7 @@ export function LineCardContainer({
         const newKeys = currentKeys.includes(key)
           ? currentKeys.filter((k) => k !== key)
           : [...currentKeys, key];
-
-        return {
-          ...prevActive,
-          [type]: newKeys,
-        };
+        return { ...prevActive, [type]: newKeys };
       });
     },
     []

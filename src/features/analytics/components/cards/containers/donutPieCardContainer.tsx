@@ -4,13 +4,13 @@ import { DateRange } from "react-day-picker";
 import { isWithinInterval, parseISO } from "date-fns";
 import { DeviceKey, BrowserKey, OSKey } from "@/features/analytics/types/type";
 import { useActiveKeysDonutPieChart } from "@/features/analytics/hooks/useActiveKeysDonutPieChart";
-import {
-  devices,
-  browsers,
-  osList,
-} from "@/features/analytics/constants/analyticsKeys";
 import { useUserLinkAnalytics } from "@/features/analytics/hooks/useUserLinkAnalitics";
 import { UserLink } from "@/features/links/types/type";
+import {
+  normalizeBrowserChartData,
+  normalizeDeviceChartData,
+  normalizeOSChartData,
+} from "@/features/analytics/utils/donutPieChartNormalizer";
 
 interface DonutPieCardContainerProps {
   selectedShortlink: UserLink | undefined;
@@ -23,109 +23,86 @@ export function DonutPieCardContainer({
     selectedShortlink?.id
   );
 
-  // State untuk menyimpan rentang tanggal
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     undefined
   );
 
-  // Efek ini akan dijalankan saat `selectedShortlink` berubah.
-  // Ini akan mereset `dateRange` sebelum data baru dimuat.
+  // Reset dateRange saat selectedShortlink berubah
   React.useEffect(() => {
     setDateRange(undefined);
   }, [selectedShortlink]);
 
-  // Efek ini akan dijalankan saat data analitik baru tiba.
-  // Ini akan mengatur `dateRange` berdasarkan data baru.
+  // ===================== SET DATE RANGE AWAL =====================
   React.useEffect(() => {
-    if (analyticsData && analyticsData.clicks.length > 0) {
-      const dates = analyticsData.clicks
+    if (analyticsData?.clicks?.length) {
+      const sortedDates = analyticsData.clicks
         .map((click) => parseISO(click.timestamp))
         .sort((a, b) => a.getTime() - b.getTime());
 
-      setDateRange({
-        from: dates[0],
-        to: dates[dates.length - 1],
-      });
-    } else {
-      // Jika tidak ada data, set dateRange menjadi undefined
-      setDateRange(undefined);
+      // Pastikan tidak undefined untuk TypeScript
+      if (sortedDates.length > 0) {
+        setDateRange({
+          from: sortedDates[0],
+          to: sortedDates[sortedDates.length - 1],
+        });
+      }
     }
   }, [analyticsData]);
 
-  const data = React.useMemo(() => {
-    if (!analyticsData?.clicks) {
-      return {
-        deviceData: [],
-        osData: [],
-        browserData: [],
-      };
-    }
-
-    const filteredClicks = analyticsData.clicks.filter((click) => {
-      if (!dateRange?.from || !dateRange.to) {
-        return true;
-      }
+  // ===================== FILTERED CLICKS =====================
+  const filteredClicks = React.useMemo(() => {
+    if (!analyticsData?.clicks) return [];
+    return analyticsData.clicks.filter((click) => {
+      if (!dateRange?.from || !dateRange.to) return true;
       const date = parseISO(click.timestamp);
       return isWithinInterval(date, {
-        start: dateRange.from,
-        end: dateRange.to,
+        start: dateRange.from!,
+        end: dateRange.to!,
       });
     });
+  }, [analyticsData, dateRange]);
 
-    const deviceData = [...devices.map((key) => ({ key, clicks: 0 }))];
-    const osData = [...osList.map((key) => ({ key, clicks: 0 }))];
-    const browserData = [...browsers.map((key) => ({ key, clicks: 0 }))];
+  // ===================== NORMALIZE CHART DATA =====================
+  const deviceData = React.useMemo(
+    () =>
+      normalizeDeviceChartData(
+        filteredClicks.map((click) => ({ device: click.device, count: 1 }))
+      ),
+    [filteredClicks]
+  );
 
-    filteredClicks.forEach((click) => {
-      // Perbaikan: Konversi data menjadi huruf kecil sebelum memproses
-      const deviceKey = click.device.toLowerCase() as DeviceKey;
-      const osKey = click.os.toLowerCase() as OSKey;
-      const browserKey = click.browser.toLowerCase() as BrowserKey;
+  const osData = React.useMemo(
+    () =>
+      normalizeOSChartData(
+        filteredClicks.map((click) => ({ os: click.os, count: 1 }))
+      ),
+    [filteredClicks]
+  );
 
-      const deviceItem = deviceData.find(
-        (d) => d.key.toLowerCase() === deviceKey
-      );
-      if (deviceItem) {
-        deviceItem.clicks += 1;
-      }
-      const osItem = osData.find((o) => o.key.toLowerCase() === osKey);
-      if (osItem) {
-        osItem.clicks += 1;
-      }
-      const browserItem = browserData.find(
-        (b) => b.key.toLowerCase() === browserKey
-      );
-      if (browserItem) {
-        browserItem.clicks += 1;
-      }
-    });
+  const browserData = React.useMemo(
+    () =>
+      normalizeBrowserChartData(
+        filteredClicks.map((click) => ({ browser: click.browser, count: 1 }))
+      ),
+    [filteredClicks]
+  );
 
-    return {
-      deviceData,
-      osData,
-      browserData,
-    };
-  }, [dateRange, analyticsData]);
+  // ===================== INITIAL ACTIVE STATE =====================
+  const initialActiveState = React.useMemo(
+    () => ({
+      devices: deviceData.filter((d) => d.clicks > 0).map((d) => d.key),
+      osList: osData.filter((o) => o.clicks > 0).map((o) => o.key),
+      browsers: browserData.filter((b) => b.clicks > 0).map((b) => b.key),
+    }),
+    [deviceData, osData, browserData]
+  );
 
-  // Menghitung initial state untuk useActiveKeysDonutPieChart
-  const initialActiveState = React.useMemo(() => {
-    return {
-      devices: data.deviceData.filter((d) => d.clicks > 0).map((d) => d.key),
-      osList: data.osData.filter((o) => o.clicks > 0).map((o) => o.key),
-      browsers: data.browserData.filter((b) => b.clicks > 0).map((b) => b.key),
-    };
-  }, [data]);
-
-  // Menggunakan hook useActiveKeysDonutPieChart dengan initial state yang telah dihitung
   const { active, onToggle } = useActiveKeysDonutPieChart(initialActiveState);
 
   const onDateRangeChange = React.useCallback(
-    (range: DateRange | undefined) => {
-      setDateRange(range);
-    },
+    (range: DateRange | undefined) => setDateRange(range),
     []
   );
-
   const onToggleDevice = React.useCallback(
     (key: DeviceKey) => onToggle("devices")(key),
     [onToggle]
@@ -143,9 +120,9 @@ export function DonutPieCardContainer({
     <DonutPieCardUI
       dateRange={dateRange}
       onDateRangeChange={onDateRangeChange}
-      deviceData={data.deviceData}
-      osData={data.osData}
-      browserData={data.browserData}
+      deviceData={deviceData}
+      osData={osData}
+      browserData={browserData}
       activeDevices={active.devices as DeviceKey[]}
       activeOS={active.osList as OSKey[]}
       activeBrowsers={active.browsers as BrowserKey[]}
@@ -154,7 +131,7 @@ export function DonutPieCardContainer({
       onToggleBrowser={onToggleBrowser}
       isLoading={isLoading}
       isError={isError}
-      hasData={analyticsData?.clicks.length !== 0}
+      hasData={filteredClicks.length > 0}
     />
   );
 }
