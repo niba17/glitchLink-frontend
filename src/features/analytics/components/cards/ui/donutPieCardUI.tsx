@@ -23,6 +23,7 @@ import { DeviceKey, BrowserKey, OSKey } from "@/features/analytics/types/type";
 interface DonutPieCardUIProps {
   dateRange: DateRange | undefined;
   onDateRangeChange: (range: DateRange | undefined) => void;
+  initialDateRange: DateRange | undefined;
   deviceData: { key: DeviceKey; clicks: number }[];
   osData: { key: OSKey; clicks: number }[];
   browserData: { key: BrowserKey; clicks: number }[];
@@ -40,6 +41,7 @@ interface DonutPieCardUIProps {
 export function DonutPieCardUI({
   dateRange,
   onDateRangeChange,
+  initialDateRange,
   deviceData,
   osData,
   browserData,
@@ -74,14 +76,23 @@ export function DonutPieCardUI({
     [browserData, activeBrowsers]
   );
 
+  // LOGIC UNTUK KEY DATE RANGE PICKER:
+  // Membuat key unik dari initialDateRange untuk memaksa komponen DateRangePicker me-reset state-nya
+  // setiap kali initialDateRange (misalnya, saat shortlink berganti) berubah.
+  const datePickerKey = initialDateRange
+    ? `${initialDateRange.from?.toISOString() || ""}-${
+        initialDateRange.to?.toISOString() || ""
+      }`
+    : "no-initial-range";
+
   return (
     <Card className="bg-foreground p-5">
       <CardHeader className="p-0 pb-3">
         <div className="flex flex-wrap gap-2">
-          {/* Add key here to force component to re-render */}
+          {/* Menambahkan key di sini */}
           <DateRangePicker
-            key={JSON.stringify(dateRange)}
-            initialRange={dateRange}
+            key={datePickerKey} // Key ditambahkan di sini
+            initialRange={initialDateRange} // Menggunakan initialDateRange
             onChange={onDateRangeChange}
           />
 

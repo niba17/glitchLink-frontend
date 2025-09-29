@@ -31,7 +31,10 @@ import { chartConfig } from "@/features/analytics/config/chartConfig";
 
 interface LineCardUIProps {
   dateRange: DateRange | undefined;
-  setDateRange: (range: DateRange | undefined) => void;
+  // Mengubah setDateRange menjadi onDateRangeChange (untuk konsistensi)
+  onDateRangeChange: (range: DateRange | undefined) => void;
+  // Menambahkan initialDateRange untuk digunakan sebagai key dan nilai awal
+  initialDateRange: DateRange | undefined;
   chartData: ChartDataItem[];
   activeDevices: DeviceKey[];
   activeOS: OSKey[];
@@ -47,7 +50,10 @@ interface LineCardUIProps {
 
 export function LineCardUI({
   dateRange,
-  setDateRange,
+  // Menerima onDateRangeChange
+  onDateRangeChange,
+  // Menerima initialDateRange
+  initialDateRange,
   chartData,
   activeDevices,
   activeOS,
@@ -60,6 +66,15 @@ export function LineCardUI({
   isError,
   hasData,
 }: LineCardUIProps) {
+  // --- Logika Key Date Range Picker ---
+  // Membuat key unik dari initialDateRange untuk memaksa komponen DateRangePicker me-reset state-nya
+  // setiap kali initialDateRange (misalnya, saat shortlink berganti) berubah.
+  const datePickerKey = initialDateRange
+    ? `${initialDateRange.from?.toISOString() || ""}-${
+        initialDateRange.to?.toISOString() || ""
+      }`
+    : "no-initial-range";
+
   // Fungsi pembantu untuk menghitung total klik per key
   const calculateTotals = (keys: ChartKey[]) => {
     const totals: Record<ChartKey, number> = {} as Record<ChartKey, number>;
@@ -125,10 +140,11 @@ export function LineCardUI({
     <Card className="bg-foreground p-5">
       <CardHeader className="p-0 pb-6">
         <div className="flex flex-wrap gap-2">
+          {/* Menerapkan key dan initialRange yang baru */}
           <DateRangePicker
-            key={JSON.stringify(dateRange)}
-            initialRange={dateRange}
-            onChange={setDateRange}
+            key={datePickerKey}
+            initialRange={initialDateRange}
+            onChange={onDateRangeChange}
           />
           {renderDropdown(
             "Device",

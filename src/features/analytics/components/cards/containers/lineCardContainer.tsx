@@ -39,6 +39,7 @@ export function LineCardContainer({
   const { analyticsData, isLoading, isError } = useUserLinkAnalytics(
     selectedShortlink?.id
   );
+  // dateRange akan digunakan sebagai initialDateRange pada LineCardUI
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     undefined
   );
@@ -49,18 +50,21 @@ export function LineCardContainer({
   });
   const hasInitializedRef = React.useRef(false);
 
+  // Efek untuk menentukan rentang tanggal awal (semua klik) saat data dimuat.
   React.useEffect(() => {
     if (analyticsData && analyticsData.clicks.length > 0) {
       const dates = analyticsData.clicks
         .map((click) => parseISO(click.timestamp))
         .sort((a, b) => a.getTime() - b.getTime());
 
+      // Set dateRange sebagai rentang default (seluruh masa pakai link)
       setDateRange({ from: dates[0], to: dates[dates.length - 1] });
     } else {
       setDateRange(undefined);
     }
-  }, [analyticsData]);
+  }, [analyticsData]); // Hanya dijalankan saat analyticsData berubah
 
+  // Efek untuk mereset flag inisialisasi aktif saat shortlink berubah
   React.useEffect(() => {
     hasInitializedRef.current = false;
   }, [selectedShortlink?.id]);
@@ -73,6 +77,7 @@ export function LineCardContainer({
     const activeDateRange =
       dateRange ||
       (() => {
+        // Jika dateRange belum diinisialisasi, hitung dari semua klik
         const dates = analyticsData.clicks
           .map((click) => parseISO(click.timestamp))
           .sort((a, b) => a.getTime() - b.getTime());
@@ -170,8 +175,12 @@ export function LineCardContainer({
 
   return (
     <LineCardUI
+      // Menambahkan initialDateRange yang memegang nilai default atau yang terakhir dipilih
+      initialDateRange={dateRange}
+      // Mengubah setDateRange menjadi onDateRangeChange untuk konsistensi
+      onDateRangeChange={setDateRange}
+      // dateRange yang diubah atau yang sedang aktif
       dateRange={dateRange}
-      setDateRange={setDateRange}
       chartData={chartData}
       activeDevices={active.devices as DeviceKey[]}
       activeOS={active.osList as OSKey[]}

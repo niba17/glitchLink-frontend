@@ -25,31 +25,36 @@ export function DonutPieCardContainer({
 
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     undefined
-  );
+  ); // Gunakan state terpisah untuk menyimpan nilai awal
 
-  // Reset dateRange saat selectedShortlink berubah
+  const [initialDateRange, setInitialDateRange] = React.useState<
+    DateRange | undefined
+  >(undefined); // Reset dateRange saat selectedShortlink berubah
+
   React.useEffect(() => {
     setDateRange(undefined);
-  }, [selectedShortlink]);
+  }, [selectedShortlink]); // ===================== SET DATE RANGE AWAL DENGAN BENAR ===================== // Gunakan useEffect untuk mengatur initialDateRange hanya saat analyticsData berubah
 
-  // ===================== SET DATE RANGE AWAL =====================
   React.useEffect(() => {
     if (analyticsData?.clicks?.length) {
       const sortedDates = analyticsData.clicks
         .map((click) => parseISO(click.timestamp))
         .sort((a, b) => a.getTime() - b.getTime());
 
-      // Pastikan tidak undefined untuk TypeScript
       if (sortedDates.length > 0) {
-        setDateRange({
+        const range = {
           from: sortedDates[0],
           to: sortedDates[sortedDates.length - 1],
-        });
+        }; // Atur state dateRange dan initialDateRange
+        setDateRange(range);
+        setInitialDateRange(range);
       }
+    } else {
+      setDateRange(undefined);
+      setInitialDateRange(undefined);
     }
-  }, [analyticsData]);
+  }, [analyticsData]); // ===================== FILTERED CLICKS =====================
 
-  // ===================== FILTERED CLICKS =====================
   const filteredClicks = React.useMemo(() => {
     if (!analyticsData?.clicks) return [];
     return analyticsData.clicks.filter((click) => {
@@ -60,9 +65,8 @@ export function DonutPieCardContainer({
         end: dateRange.to!,
       });
     });
-  }, [analyticsData, dateRange]);
+  }, [analyticsData, dateRange]); // ===================== NORMALIZE CHART DATA =====================
 
-  // ===================== NORMALIZE CHART DATA =====================
   const deviceData = React.useMemo(
     () =>
       normalizeDeviceChartData(
@@ -85,9 +89,8 @@ export function DonutPieCardContainer({
         filteredClicks.map((click) => ({ browser: click.browser, count: 1 }))
       ),
     [filteredClicks]
-  );
+  ); // ===================== INITIAL ACTIVE STATE =====================
 
-  // ===================== INITIAL ACTIVE STATE =====================
   const initialActiveState = React.useMemo(
     () => ({
       devices: deviceData.filter((d) => d.clicks > 0).map((d) => d.key),
@@ -118,7 +121,8 @@ export function DonutPieCardContainer({
 
   return (
     <DonutPieCardUI
-      dateRange={dateRange}
+      dateRange={dateRange} // Pastikan dateRange dikirim
+      initialDateRange={initialDateRange}
       onDateRangeChange={onDateRangeChange}
       deviceData={deviceData}
       osData={osData}
