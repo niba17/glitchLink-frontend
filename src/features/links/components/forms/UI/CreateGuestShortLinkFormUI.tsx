@@ -56,7 +56,7 @@ export default function CreateGuestShortLinkFormUI({
             className={
               fieldErrors?.originalUrl
                 ? "border border-red-500 focus:ring-red-500"
-                : ""
+                : "" + " lg:h-14 md:h-12"
             }
           />
           {fieldErrors?.originalUrl && (
@@ -91,7 +91,7 @@ export default function CreateGuestShortLinkFormUI({
             className={
               fieldErrors?.customAlias
                 ? "border border-red-500 focus:ring-red-500"
-                : ""
+                : "" + " lg:h-14 md:h-12"
             }
           />
           {fieldErrors?.customAlias && (
@@ -122,7 +122,7 @@ export default function CreateGuestShortLinkFormUI({
             className={
               fieldErrors?.expiresAt
                 ? "border border-red-500 focus:ring-red-500"
-                : ""
+                : "" + " lg:h-14 md:h-12"
             }
           />
           {fieldErrors?.expiresAt && (
@@ -134,7 +134,7 @@ export default function CreateGuestShortLinkFormUI({
       <Button
         type="submit"
         variant="default"
-        className="text-[20px] h-14 flex items-center justify-center"
+        className="lg:text-[20px] md:text-[18px] lg:h-14 md:h-12 flex items-center justify-center"
         disabled={isPending}
       >
         {isPending ? <Spinner className="w-7 h-7" /> : "Get Shortlink"}

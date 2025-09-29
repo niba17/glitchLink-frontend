@@ -147,13 +147,13 @@ export function UserLinkTableUI({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[80px]"></TableHead>
-              <TableHead className="text-stone-200 text-xl font-semibold">
+              <TableHead className="text-stone-200 lg:text-xl md:text-[18px] font-semibold">
                 Links
               </TableHead>
-              <TableHead className="text-end text-stone-200 text-xl font-semibold">
+              <TableHead className="text-end text-stone-200 lg:text-xl md:text-[18px] font-semibold">
                 Clicks
               </TableHead>
-              <TableHead className="text-end text-stone-200 text-xl font-semibold">
+              <TableHead className="text-end text-stone-200 lg:text-xl md:text-[18px] font-semibold">
                 Created / Expired At
               </TableHead>
             </TableRow>
